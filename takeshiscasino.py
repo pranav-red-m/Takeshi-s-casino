@@ -12,9 +12,7 @@ def main():
     print("====================================")
     print("                                    ")
     print("To quit this game just type and enter quit.")
-    print("This current version of Takeshi's Casino supports Mines, Coinflip, Chicken Fight, Buckshot Roulette.")  #please update this when you update this game
-if __name__=="__main__":
-    main()
+    print("This current version of Takeshi's Casino supports Mines, Coinflip, Chicken Fight, Buckshot Roulette and HighLow.")  #please update this when you update this game
 def coinfliproom(bal):
     print("                                    "),print("                                    ")
     print("🎉Welcome! You've entered the Coinflip Room.🎉")
@@ -154,32 +152,6 @@ def chickenroom(bal):
             break
         elif chickenaction.lower()=="bal":
             print(f"Your current balance is {bal}")
-    return bal
-def blackroom(bal):
-    print("                                    "),print("                                    ")
-    print("♠️♥️ Welcome to the Blackjack Room ♣️♦️")
-    print("                                    "),print("                                    ")
-    print("🃏 Step right up and take a seat at the table!")
-    print("🎲 Ready to test your luck and skill against the dealer?")
-    print("💰 The stakes are high, and the rewards could be even higher!")
-    print("Please type 'deal' to start the game, 'exit' to leave the blackjack room,'bal' to check your current balance and 'rules' to find the rules of this game")
-    print("                                    "),print("                                    ")
-    while True:
-        blackjackaction = input("Please enter what you would like to do: ")
-        if blackjackaction.lower()=="deal":
-            blackjackbet=int(input("Enter how much you would like to bet: "))
-            playercount=0
-            dealercount=0
-            noofcardsforall=0
-        elif blackjackaction.lower()=="bal":
-            print(f"Your current balance is {bal}")
-        elif blackjackaction.lower()=="rules":
-            print()#insert the rules
-        elif blackjackaction.lower()=="exit":
-            print("Thanks for joining us this time we will cya later.")
-            break
-        else:
-            print("Typo moment")
     return bal
 def minesui():
     rock_art = """
@@ -387,13 +359,80 @@ def buckui(buckplayerhp,buckdealerhp):
     print("Decide either you shoot.")
     print("1.Dealer")
     print("2.Yourself")
+def highlow(bal):
+    while True:
+        print("\nWelcome player, to the HighLow Room!")
+        print("Get ready to guess if the next number is higher or lower.")
+        print("Good luck and have fun!")
+        hlinput = input("Please enter what you would like to do: ").lower()
+        hlcards = {0:2, 1:3, 2:4, 3:5, 4:6, 5:7, 6:8, 7:9, 8:10, 9:"Jack", 10:"Queen", 11:"King", 12:"Ace"}
+        hlsuites = {0:"Spades", 1:"Diamonds", 2:"Hearts", 3:"Clubs"}
+        
+        if hlinput in ["play", "deal", "start"]:
+            try:
+                hlbet = int(input("Please type how much you would like to bet: "))
+                if hlbet > bal:
+                    print("You can't use a value greater than your balance.")
+                    continue
+                print(f"The current bet of {hlbet} has been accepted.")
+            except ValueError:
+                print("Please input a valid integer.")
+                continue
+            hlmulti = 1
+            while True:
+                hlrandomnum = random.randint(0, 12)
+                hlnextrandom = random.randint(0, 12)
+                hlcurcard = hlcards[hlrandomnum]
+                hlnextcard = hlcards[hlnextrandom]
+                print(f"\nThe current card is {hlcurcard} of {hlsuites[random.randint(0, 3)]}.")
+                if hlcurcard == 2:
+                    print("Please guess if the next card is going to be equal or higher.")
+                elif hlcurcard == "Ace":
+                    print("Please guess if the next card is going to be equal or lower.")
+                else:
+                    print("Please guess if the next card is going to be lower, higher, or equal.")
+                
+                print(f"Your current multiplier is {hlmulti}x.")
+                hlaction = input("Higher, lower, equal or quit: ").lower()
 
+                if hlaction in ["leave", "quit", "cashout"]:
+                    print(f"You cashed out with a multiplier of {hlmulti}.")
+                    bal += hlbet * hlmulti - hlbet
+                    break
+                if hlaction == "equal" and hlcurcard == hlnextcard:
+                    hlmulti += 100 / 13
+                    print(f"Correct! The next card was {hlnextcard}. Multiplier increased to {hlmulti}x.")
+                elif (hlaction in ["higher", "high", "h"] and hlnextrandom > hlrandomnum) or \
+                     (hlaction in ["lower", "low", "l"] and hlnextrandom < hlrandomnum):
+                    hlmulti += 1 - abs(hlnextrandom - hlrandomnum) / 100
+                    print(f"Correct! The next card was {hlnextcard}. Multiplier increased to {hlmulti}x.")
+                else:
+                    print(f"Incorrect. The next card was {hlnextcard}. You lost!")
+                    hlmulti = 0
+                    break
 
+            bal -= hlbet
+            bal += hlbet * hlmulti
+            print(f"Your new balance is {bal}.")
+        elif hlinput in ["bal", "balance", "savings"]:
+            print(f"Your current balance is {bal}.")
+        elif hlinput in ["exit", "quit", "leave"]:
+            print("It was nice seeing you here! Please come back again.")
+            break
+        elif hlinput in ["rules", "rule"]:
+            highlowrules()
+    return bal
+def highlowrules():
+    print("1. The cards are drawn randomly from an infinite deck.")
+    print("2. you have to choose if a card is higher or equal or lower and equal")
+    print("3. However if you pull the lowest tag(2) or the highest card(ace) you will have to decide if the next card will be equal or higher or equal or lower.")
+    print("4. The higher the risk the higher the higer the pay")
+    print("5. The lower the rick the lower the astley.")
+    print("6. Never gonna give you up")
+    print("7. Never gonna let you down")
+    print("8. Never gonna run around and desert you")
 
-
-
-
-
+main()
 while True:
     room = input("Please enter which room you would like to enter: ").lower()
     if room == "coinflip" or room=="coin":
@@ -411,21 +450,7 @@ while True:
         buckshotroom(bal)
     elif room in ["bal"]:
         print(f"Your current balance is {bal}.")
+    elif room in ["hl","highlow","high"]:
+        highlow(bal)
     else:
         print("Typo moment.")
-
-#if you are seeing this you must know this code is not gonna run in the script.
-#if you wanna know why read on
-#im making this kinda notes down here for anyone who is gonna attempt any project kinda like this
-#this kinda thing that you should see to know what to do cause after all this is my first project and i want everyone who reads this to know
-#exactly what i did wrong and what what you should do correct
-#first i was too focused on trying to make every code efficient, dint work then i planned on making it not that inefficient bt to get work done now i have code that sucks
-#ex. for ever game there is a loop to check if the bets are more than the bal when i clearly could have made a function to check it
-#i still cna do it now i havent even coded in mines but i was so focused on getting to the extremes i legit 10mins if i thought it through made the code so much more
-#readable and better.
-#another one i made the balance system kinda ass by making it just a global variable that keeps on being re-written.
-#i should ahve made a list that acts as kinda a balance ledger and always find -1 index to reffer to the current balance.
-#again the core of this part of the code is not for me to build the best code ever to exist in the world.
-#ill do that one day or another but this is my first step atop my jacobs ladder
-#im making this in case if any new programmer wants to find how to skip the step they can just read this long yip yap
-#and yes i am aware chickenfight is op for money shush
